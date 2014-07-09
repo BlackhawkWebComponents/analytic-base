@@ -17,7 +17,31 @@ Element providing ..
 
 TODO: remove title and all references in demos
 -->
-<polymer-element name="analytic-base" attributes="title chartType limit target showLegend">
+<polymer-element name="analytic-base"
+                 on-query-change="processQueryChanged"
+                 attributes="title chartType limit target showLegend">
+    <template>
+        <style>
+            :host {
+                display: block;
+                position: relative;
+            }
+        </style>
+
+        <content></content>
+
+        <template if="{{chartReady}}">
+            <chart-js
+                    kind="{{chartType}}"
+                    showLegend="{{showLegend}}"
+                    data="{{chartData}}"
+                    on-chart-items-selected="{{analyticItemSelected}}">
+            </chart-js>
+        </template>
+        <template if="{{queryRunning}}">
+            <div></div>
+        </template>
+    </template>
     <script>
         Polymer('analytic-base', {
 
@@ -74,11 +98,137 @@ TODO: remove title and all references in demos
              */
             chartReady: false,
 
+            /**
+             * Response returned from api
+             * @attribute response
+             * @type object or array
+             * @default null
+             */
+            response: null,
 
+            created: function () {
+                this.chartData = {};
+            },
+            processQueryChanged: function(event, detail) {
+                this.query = detail.query;
+                this.queryRunning = true;
+                this.runQuery();
+            },
+            responseChanged: function() {
+                this.queryRunning = false;
+                this.chartData = this.chartFormat(this.response);
+                this.chartReady = true;
+            },
+            chartFormat: function(value) {
+                // first get thre common chart format from the concrete element
+                var commonFormat = this.commonChartFormat(value);
+                var chartFormat;
+
+                if (this.chartType == 'Bar') {
+                    chartFormat = {
+                        labels: commonFormat.labels,
+                        datasets: [{
+                            fillColor : "rgba(239,241,245,1)",
+                            strokeColor : "rgba(0,0,0,0)",
+                            highlightFill: "rgba(230,233,240,1)",
+                            data: commonFormat.data
+                        }]
+                    };
+                } else if (this.chartType == 'Pie' || this.chartType == 'Doughnut' || this.chartType == 'PolarArea') {
+                    // TODO: support more than 10 colors, will break if data is > 10
+                    chartFormat = [];
+                    for (var i = 0; i < commonFormat.data.length; ++i ) {
+                        chartFormat.push(
+                                {
+                                    value: commonFormat.data[i],
+                                    color:colors[i].color,
+                                    highlight: colors[i].highlight,
+                                    label: commonFormat.labels[i]
+                                }
+                        )
+                    }
+                }
+
+                return chartFormat;
+            },
+            /**
+             * To be implemented by concrete element
+             */
+            runQuery: function() {
+
+            },
+            /**
+             * To be implemented by concrete element
+             */
+            commonChartFormat: function(value) {
+                // common format to adhere to
+                var commonFormat = {
+                    labels: [],
+                    data: []
+                }
+                return commonFormat;
+            },
+            analyticItemSelected: function(event, detail) {
+                this.fire('analytic-item-selected', detail);
+            },
             json: function(value) {
                 return JSON.stringify(value, null, 2);
             }
         });
+
+        var red = "#bf616a",
+                blue = "#5B90BF",
+                orange = "#d08770",
+                yellow = "#ebcb8b",
+                green = "#a3be8c",
+                teal = "#96b5b4",
+                pale_blue = "#8fa1b3",
+                purple = "#b48ead",
+                brown = "#ab7967";
+        pink = "#e81d62";
+
+        var colors = [
+            {'color':red, 'highlight':Color(red,10)},
+            {'color':blue, 'highlight':Color(blue,10)},
+            {'color':orange, 'highlight':Color(orange,10)},
+            {'color':yellow, 'highlight':Color(yellow,10)},
+            {'color':green, 'highlight':Color(green,10)},
+            {'color':teal, 'highlight':Color(teal,10)},
+            {'color':pale_blue, 'highlight':Color(pale_blue,10)},
+            {'color':purple, 'highlight':Color(purple,10)},
+            {'color':brown, 'highlight':Color(brown,10)},
+            {'color':pink, 'highlight':Color(pink,10)}
+        ]
+
+        function Color(col, amt) {
+
+            var usePound = false;
+
+            if (col[0] == "#") {
+                col = col.slice(1);
+                usePound = true;
+            }
+
+            var num = parseInt(col,16);
+
+            var r = (num >> 16) + amt;
+
+            if (r > 255) r = 255;
+            else if  (r < 0) r = 0;
+
+            var b = ((num >> 8) & 0x00FF) + amt;
+
+            if (b > 255) b = 255;
+            else if  (b < 0) b = 0;
+
+            var g = (num & 0x0000FF) + amt;
+
+            if (g > 255) g = 255;
+            else if (g < 0) g = 0;
+
+            return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
+
+        }
     </script>
 </polymer-element>
 
