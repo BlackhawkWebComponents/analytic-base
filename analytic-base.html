@@ -19,7 +19,7 @@ TODO: remove title and all references in demos
 -->
 <polymer-element name="analytic-base"
                  on-query-change="processQueryChanged"
-                 attributes="title chartType limit target showLegend">
+                 attributes="title chartType limit target showLegend height">
     <template>
         <style>
             :host {
@@ -33,6 +33,7 @@ TODO: remove title and all references in demos
         <template if="{{chartReady}}">
             <chart-js
                     kind="{{chartType}}"
+                    height="{{height}}"
                     showLegend="{{showLegend}}"
                     data="{{chartData}}"
                     on-chart-items-selected="{{analyticItemSelected}}">
@@ -44,7 +45,7 @@ TODO: remove title and all references in demos
     </template>
     <script>
         Polymer('analytic-base', {
-
+            height: '250px',
             /**
              * Fired when a analytic item is clicked on chart
              *
