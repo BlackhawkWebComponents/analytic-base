@@ -148,6 +148,21 @@ TODO: remove title and all references in demos
                                 }
                         )
                     }
+                } else if (this.chartType == 'Line') {
+                    //console.log('chartFormat is Line');
+                    chartFormat = {
+                        labels: commonFormat.labels,
+                        datasets: [{
+                            label: "Series 1",
+                            fillColor: "rgba(220,220,220,0.2)",
+                            strokeColor: "rgba(220,220,220,1)",
+                            pointColor: "rgba(220,220,220,1)",
+                            pointStrokeColor: "#fff",
+                            pointHighlightFill: "#fff",
+                            pointHighlightStroke: "rgba(220,220,220,1)",
+                            data: commonFormat.data
+                        }]
+                    };
                 }
 
                 return chartFormat;
