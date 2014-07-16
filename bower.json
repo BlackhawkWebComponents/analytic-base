@@ -22,6 +22,10 @@
         "polymer"
     ],
     "dependencies": {
-        "polymer": "Polymer/polymer#master"
+        "polymer": "Polymer/polymer#master",
+        "chart-js": "BlackhawkWebComponents/chart-js#master",
+        "leaflet-map": "BlackhawkWebComponents/leaflet-map#master",
+        "leaflet-heatmap-layer": "BlackhawkWebComponents/leaflet-heatmap-layer#master"
+
     }
 }

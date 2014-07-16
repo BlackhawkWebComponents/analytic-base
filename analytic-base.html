@@ -1,5 +1,7 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../chart-js/chart-js.html">
+<link rel="import" href="../leaflet-map/leaflet-map.html">
+<link rel="import" href="../leaflet-heatmap-layer/leaflet-heatmap-layer.html">
 
 <!--
 Element providing ..
@@ -19,18 +21,28 @@ TODO: remove title and all references in demos
 -->
 <polymer-element name="analytic-base"
                  on-query-change="processQueryChanged"
-                 attributes="title chartType limit target showLegend height">
+                 attributes="title chartType limit target showLegend height lat lon zoom minZoom maxZoom mapTileUrl mapSourceUrl mapSource heatmapMax">
     <template>
         <style>
             :host {
                 display: block;
                 position: relative;
             }
+            leaflet-map {
+                display: block;
+                max-width: 100%;
+                height: 250px;
+            }
+            google-map {
+                display: block;
+                max-width: 100%;
+                height: 250px;
+            }
         </style>
 
         <content></content>
 
-        <template if="{{chartReady}}">
+        <template if="{{chartReady && chartType != 'Map'}}">
             <chart-js
                     kind="{{chartType}}"
                     height="{{height}}"
@@ -38,6 +50,32 @@ TODO: remove title and all references in demos
                     data="{{chartData}}"
                     on-chart-items-selected="{{analyticItemSelected}}">
             </chart-js>
+        </template>
+
+        <template if="{{chartReady && chartType == 'Map'}}">
+            <!-- Note: zoomPanOptions animate:false and zoomAnimationThreshold = 0 required for core-animated-pages -->
+            <leaflet-map latitude="{{lat}}" longitude="{{lon}}" zoom="{{zoom}}" minZoom="{{minZoom}}" maxZoom="{{maxZoom}}"
+                         zoomAnimationThreshold="0"
+                         zoomPanOptions="{{ {animate:false} }}">
+                <leaflet-tilelayer
+                        url="{{mapTileUrl}}"
+                        minZoom="{{minZoom}}" maxZoom="{{maxZoom}}" noWrap>
+                    Map source: <a href="{{mapSourceUrl}}">{{mapSource}}</a>
+                </leaflet-tilelayer>
+                <leaflet-heatmap-layer data="{{chartData}}" maxZoom="{{maxZoom}}" max="{{heatmapMax}}"></leaflet-heatmap-layer>
+            </leaflet-map>
+            <!--
+            <leaflet-map latitude="33.219300000000004" longitude="43.6842" zoom="5" minZoom="5" maxZoom="13"
+                         zoomAnimationThreshold="0"
+                         zoomPanOptions="{{ {animate:false} }}">
+                <leaflet-tilelayer
+                        url="{{mapTileUrl}}"
+                        minZoom="5" maxZoom="13" noWrap>
+                    Map source: <a href="http://www.mapbox.com/about/maps/">Terms &amp; Feedback</a>
+                </leaflet-tilelayer>
+                <leaflet-heatmap-layer data="{{chartData}}" maxZoom="13" max=".75"></leaflet-heatmap-layer>
+            </leaflet-map>
+            -->
         </template>
         <template if="{{queryRunning}}">
             <div></div>
@@ -107,6 +145,79 @@ TODO: remove title and all references in demos
              */
             response: null,
 
+            /**
+             * map center lat
+             * @attribute lat
+             * @type float
+             * @default null
+             */
+            lat: null,
+
+            /**
+             * map center lon
+             * @attribute lon
+             * @type float
+             * @default null
+             */
+            lon: null,
+
+            /**
+             * map zoom level
+             * @attribute zoom
+             * @type integer
+             * @default null
+             */
+            zoom: null,
+
+            /**
+             * map min zoom level
+             * @attribute minZoom
+             * @type integer
+             * @default null
+             */
+            minZoom: null,
+
+            /**
+             * map max zoom level
+             * @attribute maxZoom
+             * @type integer
+             * @default null
+             */
+            maxZoom: null,
+
+            /**
+             * map tile url (Example http://{s}.tiles.mapbox.com/v3/mapbox.iraq/{z}/{x}/{y}.png)
+             * @attribute mapTileUrl
+             * @type string
+             * @default null
+             */
+            mapTileUrl: null,
+
+            /**
+             * map source url (example: http://www.mapbox.com/about/maps/)
+             * @attribute mapSourceUrl
+             * @type string
+             * @default null
+             */
+            mapSourceUrl: null,
+
+            /**
+             * map source title (example: Terms &amp; Conditions)
+             * @attribute mapSource
+             * @type string
+             * @default null
+             */
+            mapSource: null,
+
+            /**
+             * heatmap max point density
+             * @attribute heatmapMax
+             * @type float
+             * @default 1.0
+             */
+            heatmapMax: 1.0,
+
+
             created: function () {
                 this.chartData = {};
             },
@@ -163,6 +274,8 @@ TODO: remove title and all references in demos
                             data: commonFormat.data
                         }]
                     };
+                } else if (this.chartType == 'Map') {
+                    return commonFormat;
                 }
 
                 return chartFormat;
