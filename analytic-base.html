@@ -54,9 +54,7 @@ TODO: remove title and all references in demos
 
         <template if="{{chartReady && chartType == 'Map'}}">
             <!-- Note: zoomPanOptions animate:false and zoomAnimationThreshold = 0 required for core-animated-pages -->
-            <leaflet-map latitude="{{lat}}" longitude="{{lon}}" zoom="{{zoom}}" minZoom="{{minZoom}}" maxZoom="{{maxZoom}}"
-                         zoomAnimationThreshold="0"
-                         zoomPanOptions="{{ {animate:false} }}">
+            <leaflet-map latitude="{{lat}}" longitude="{{lon}}" zoom="{{zoom}}" minZoom="{{minZoom}}" maxZoom="{{maxZoom}}">
                 <leaflet-tilelayer
                         url="{{mapTileUrl}}"
                         minZoom="{{minZoom}}" maxZoom="{{maxZoom}}" noWrap>
@@ -64,18 +62,6 @@ TODO: remove title and all references in demos
                 </leaflet-tilelayer>
                 <leaflet-heatmap-layer data="{{chartData}}" maxZoom="{{maxZoom}}" max="{{heatmapMax}}"></leaflet-heatmap-layer>
             </leaflet-map>
-            <!--
-            <leaflet-map latitude="33.219300000000004" longitude="43.6842" zoom="5" minZoom="5" maxZoom="13"
-                         zoomAnimationThreshold="0"
-                         zoomPanOptions="{{ {animate:false} }}">
-                <leaflet-tilelayer
-                        url="{{mapTileUrl}}"
-                        minZoom="5" maxZoom="13" noWrap>
-                    Map source: <a href="http://www.mapbox.com/about/maps/">Terms &amp; Feedback</a>
-                </leaflet-tilelayer>
-                <leaflet-heatmap-layer data="{{chartData}}" maxZoom="13" max=".75"></leaflet-heatmap-layer>
-            </leaflet-map>
-            -->
         </template>
         <template if="{{queryRunning}}">
             <div></div>
