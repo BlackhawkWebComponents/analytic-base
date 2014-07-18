@@ -2,6 +2,7 @@
 <link rel="import" href="../chart-js/chart-js.html">
 <link rel="import" href="../leaflet-map/leaflet-map.html">
 <link rel="import" href="../leaflet-heatmap-layer/leaflet-heatmap-layer.html">
+<link rel="import" href="../x-loading/x-loading.html">
 
 <!--
 Element providing ..
@@ -38,11 +39,16 @@ TODO: remove title and all references in demos
                 max-width: 100%;
                 height: 250px;
             }
+            .loading {
+                display: block;
+                max-width: 100%;
+                height: 250px;
+            }
         </style>
 
         <content></content>
 
-        <template if="{{chartReady && chartType != 'Map'}}">
+        <template if="{{!queryRunning && chartReady && chartType != 'Map'}}">
             <chart-js
                     kind="{{chartType}}"
                     height="{{height}}"
@@ -52,7 +58,7 @@ TODO: remove title and all references in demos
             </chart-js>
         </template>
 
-        <template if="{{chartReady && chartType == 'Map'}}">
+        <template if="{{!queryRunning && chartReady && chartType == 'Map'}}">
             <!-- Note: zoomPanOptions animate:false and zoomAnimationThreshold = 0 required for core-animated-pages -->
             <leaflet-map latitude="{{lat}}" longitude="{{lon}}" zoom="{{zoom}}" minZoom="{{minZoom}}" maxZoom="{{maxZoom}}">
                 <leaflet-tilelayer
@@ -64,7 +70,10 @@ TODO: remove title and all references in demos
             </leaflet-map>
         </template>
         <template if="{{queryRunning}}">
-            <div></div>
+            <div class="loading">
+                <x-loading></x-loading>
+            </div>
+
         </template>
     </template>
     <script>
