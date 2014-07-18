@@ -25,7 +25,8 @@
         "polymer": "Polymer/polymer#master",
         "chart-js": "BlackhawkWebComponents/chart-js#master",
         "leaflet-map": "nhnb/leaflet-map#master",
-        "leaflet-heatmap-layer": "BlackhawkWebComponents/leaflet-heatmap-layer#master"
+        "leaflet-heatmap-layer": "BlackhawkWebComponents/leaflet-heatmap-layer#master",
+        "x-loading": "BlackhawkWebComponents/x-loading#master"
 
     }
 }
